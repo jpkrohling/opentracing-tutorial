@@ -188,6 +188,10 @@ public String format(@QueryParam("helloTo") String helloTo, @Context HttpHeaders
 }
 ```
 
+#### Apply the same to the Publisher
+
+Now, just apply the same changes to the publisher.
+
 ### Take It For a Spin
 
 As before, first run the `formatter` and `publisher` apps in separate terminals.
