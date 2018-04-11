@@ -95,7 +95,7 @@ In this case the `carrier` is HTTP request headers object, which we adapt to the
 by wrapping in `RequestBuilderCarrier` helper class. 
 
 ```java
-private static class RequestBuilderCarrier implements io.opentracing.propagation.TextMap {
+public class RequestBuilderCarrier implements io.opentracing.propagation.TextMap {
     private final Request.Builder builder;
 
     RequestBuilderCarrier(Request.Builder builder) {
@@ -103,7 +103,7 @@ private static class RequestBuilderCarrier implements io.opentracing.propagation
     }
 
     @Override
-    public Iterator<Entry<String, String>> iterator() {
+    public Iterator<Map.Entry<String, String>> iterator() {
         throw new UnsupportedOperationException("carrier is write-only");
     }
 
@@ -121,14 +121,6 @@ and we mark the span with a `span.kind=client` tag, as recommended by the OpenTr
 ### Instrumenting the Servers
 
 Our servers are currently not instrumented for tracing. We need to do the following:
-
-#### Add some imports
-
-```java
-import io.opentracing.Scope;
-import io.opentracing.Tracer;
-import lib.Tracing;
-```
 
 #### Create an instance of a Tracer, similar to how we did it in `Hello.java`
 
@@ -188,7 +180,7 @@ Now change the `FormatterResource` handler method to use `startServerSpan`:
 ```java
 @GET
 public String format(@QueryParam("helloTo") String helloTo, @Context HttpHeaders httpHeaders) {
-    try (Scope scope = Tracing.startServerSpan(tracer, httpHeaders, "format")) {
+    try (Scope scope = startServerSpan(tracer, httpHeaders, "format")) {
         String helloStr = String.format("Hello, %s!", helloTo);
         scope.span().log(ImmutableMap.of("event", "string-format", "value", helloStr));
         return helloStr;

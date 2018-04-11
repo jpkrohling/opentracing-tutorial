@@ -1,13 +1,19 @@
 package lesson03.exercise;
 
+import com.google.common.collect.ImmutableMap;
 import io.dropwizard.Application;
 import io.dropwizard.Configuration;
 import io.dropwizard.setup.Environment;
+import io.opentracing.Scope;
+import io.opentracing.Tracer;
+import lib.Tracing;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 public class Publisher extends Application<Configuration> {
@@ -17,13 +23,13 @@ public class Publisher extends Application<Configuration> {
     public class PublisherResource {
 
         @GET
-        public String format(@QueryParam("helloStr") String helloStr) {
+        public String format(@QueryParam("helloStr") String helloStr, @Context HttpHeaders httpHeaders) {
             System.out.println(helloStr);
             return "published";
         }
     }
 
-	@Override
+    @Override
     public void run(Configuration configuration, Environment environment) throws Exception {
         environment.jersey().register(new PublisherResource());
     }
@@ -31,6 +37,7 @@ public class Publisher extends Application<Configuration> {
     public static void main(String[] args) throws Exception {
         System.setProperty("dw.server.applicationConnectors[0].port", "8082");
         System.setProperty("dw.server.adminConnectors[0].port", "9082");
+
         new Publisher().run(args);
     }
 }

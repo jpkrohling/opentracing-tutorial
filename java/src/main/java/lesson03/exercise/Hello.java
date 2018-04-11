@@ -1,14 +1,17 @@
 package lesson03.exercise;
 
-import io.opentracing.Scope;
-import java.io.IOException;
 import com.google.common.collect.ImmutableMap;
 import com.uber.jaeger.Tracer;
+import io.opentracing.Scope;
+import io.opentracing.propagation.Format;
+import io.opentracing.tag.Tags;
+import lib.Tracing;
+import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.HttpUrl;
-import lib.Tracing;
+
+import java.io.IOException;
 
 public class Hello {
 
@@ -25,6 +28,7 @@ public class Hello {
             HttpUrl url = new HttpUrl.Builder().scheme("http").host("localhost").port(port).addPathSegment(path)
                     .addQueryParameter(param, value).build();
             Request.Builder requestBuilder = new Request.Builder().url(url);
+
             Request request = requestBuilder.build();
             Response response = client.newCall(request).execute();
             if (response.code() != 200) {
