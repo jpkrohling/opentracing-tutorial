@@ -1,16 +1,6 @@
 package lib;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.ws.rs.core.MultivaluedMap;
-
-import com.uber.jaeger.Configuration;
-import com.uber.jaeger.Configuration.ReporterConfiguration;
-import com.uber.jaeger.Configuration.SamplerConfiguration;
-import com.uber.jaeger.samplers.ConstSampler;
-
+import io.jaegertracing.Configuration;
 import io.opentracing.Scope;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
@@ -20,23 +10,17 @@ import io.opentracing.propagation.TextMapExtractAdapter;
 import io.opentracing.tag.Tags;
 import okhttp3.Request;
 
+import javax.ws.rs.core.MultivaluedMap;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 public final class Tracing {
     private Tracing() {
     }
 
-    public static com.uber.jaeger.Tracer init(String service) {
-        SamplerConfiguration samplerConfig = SamplerConfiguration.fromEnv()
-                .withType(ConstSampler.TYPE)
-                .withParam(1);
-
-        ReporterConfiguration reporterConfig = ReporterConfiguration.fromEnv()
-                .withLogSpans(true);
-
-        Configuration config = new Configuration(service)
-                .withSampler(samplerConfig)
-                .withReporter(reporterConfig);
-
-        return (com.uber.jaeger.Tracer) config.getTracer();
+    public static Tracer init(String service) {
+        return Configuration.fromEnv("opentracing-tutorial").getTracer();
     }
 
     public static Scope startServerSpan(Tracer tracer, javax.ws.rs.core.HttpHeaders httpHeaders, String operationName) {
